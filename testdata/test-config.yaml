@@ -1,0 +1,54 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+
+processors:
+  preaggregation:
+    mode: statistical
+
+    window:
+      duration: 60s
+      aggregation_temporality: delta
+
+    routing_patterns:
+      # Pattern-based routing for test.fix.* metrics
+      min_patterns:
+        - ".*\\.min$"
+      max_patterns:
+        - ".*\\.max$"
+      sum_patterns:
+        - ".*\\.sum$"
+      count_patterns:
+        - ".*\\.count$"
+      avg_patterns:
+        - ".*\\.avg$"
+
+      # Type-based routing for other metrics
+      enable_type_based: true
+      gauge_default_agg: "avg"
+      counter_default_agg: "sum"
+
+exporters:
+  logging:
+    loglevel: debug
+
+  # Optional: Add Datadog exporter if testing with actual backend
+  # datadog:
+  #   api:
+  #     key: "${DD_API_KEY}"
+  #   metrics:
+  #     endpoint: https://api.datadoghq.com
+
+service:
+  pipelines:
+    metrics:
+      receivers: [otlp]
+      processors: [preaggregation]
+      exporters: [logging]
+
+  # Enable debug telemetry
+  telemetry:
+    logs:
+      level: debug

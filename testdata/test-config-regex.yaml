@@ -1,0 +1,70 @@
+# Test configuration for REGEX pattern matching
+# This demonstrates the traditional match_type: regexp capability
+
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  preaggregation:
+    mode: statistical
+
+    window:
+      duration: 60s
+      aggregation_temporality: delta
+
+    routing_patterns:
+      # Traditional regex patterns (default mode)
+      match_type: regexp    # ✅ Regex patterns (advanced)
+
+      # Regex-style patterns (more powerful)
+      min_patterns:
+        - ".*\\.min$"                      # Ends with .min
+        - ".*\\.(min|minimum)$"            # Ends with .min OR .minimum
+        - "^(cpu|memory)\\..*\\.min$"      # cpu.*.min or memory.*.min
+
+      max_patterns:
+        - ".*\\.max$"
+        - ".*\\.maximum$"
+
+      sum_patterns:
+        - ".*\\.(sum|total|aggregate)$"    # Multiple alternatives
+        - "^requests\\..*"                 # Starts with requests.
+
+      count_patterns:
+        - ".*[._-]count$"                  # . or _ or - before count
+        - "^errors\\..*"                   # Starts with errors.
+
+      avg_patterns:
+        - ".*\\.(avg|average|mean)$"
+        - "^latency\\.p\\d{2}$"            # latency.p50, latency.p95, etc.
+        - "^cpu\\.core\\.\\d+\\.usage$"    # cpu.core.0.usage, etc.
+
+      # Regex caching for performance
+      regexp:
+        cacheenabled: true
+        cachemaxnumentries: 1000
+
+      # Type-based fallback
+      enable_type_based: true
+      gauge_default_agg: "avg"
+      counter_default_agg: "sum"
+
+exporters:
+  debug:
+    verbosity: detailed
+
+service:
+  telemetry:
+    logs:
+      level: info
+
+  pipelines:
+    metrics:
+      receivers: [otlp]
+      processors: [preaggregation]
+      exporters: [debug]

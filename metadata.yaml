@@ -1,0 +1,13 @@
+type: preaggregation
+
+status:
+  class: processor
+  stability:
+    alpha: [metrics]
+  distributions: [contrib]
+  warnings: [Statefulness]
+  codeowners:
+    active: []
+
+tests:
+  config:

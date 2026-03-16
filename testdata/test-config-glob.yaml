@@ -1,0 +1,75 @@
+# Test configuration for GLOB pattern matching
+# This demonstrates the new user-friendly glob pattern support
+
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  preaggregation:
+    mode: statistical
+
+    window:
+      duration: 60s
+      aggregation_temporality: delta
+
+    routing_patterns:
+      # NEW FEATURE: Use simple glob patterns (default, most user-friendly)
+      match_type: glob    # ✅ Enable glob patterns (*.min instead of .*\.min$)
+
+      # Glob-style patterns (much simpler than regex!)
+      min_patterns:
+        - "*.min"           # Matches: cpu.usage.min, memory.total.min
+        - "*_min"           # Matches: cpu_usage_min, memory_total_min
+
+      max_patterns:
+        - "*.max"           # Matches: cpu.usage.max, memory.total.max
+        - "*.maximum"       # Matches: cpu.usage.maximum
+
+      sum_patterns:
+        - "*.sum"           # Matches: requests.api.sum
+        - "*.total"         # Matches: requests.api.total
+        - "requests.*"      # Matches: requests.count, requests.errors
+
+      count_patterns:
+        - "*.count"         # Matches: api.count, errors.count
+        - "errors.*"        # Matches: errors.http, errors.db
+
+      avg_patterns:
+        - "*.avg"           # Matches: latency.avg, response_time.avg
+        - "latency.*"       # Matches: latency.p50, latency.p95
+
+      # Type-based fallback
+      enable_type_based: true
+      gauge_default_agg: "avg"
+      counter_default_agg: "sum"
+
+    # Include/exclude filters also support glob patterns
+    include:
+      match_type: glob
+      patterns:
+        - "test.*"         # Only process metrics starting with test.
+        - "*.min"
+        - "*.max"
+        - "*.avg"
+        - "*.sum"
+        - "*.count"
+
+exporters:
+  debug:
+    verbosity: detailed
+
+service:
+  telemetry:
+    logs:
+      level: info
+
+  pipelines:
+    metrics:
+      receivers: [otlp]
+      processors: [preaggregation]
+      exporters: [debug]
