@@ -667,18 +667,6 @@ For each incoming metric:
 | `avg` | Average of all values | `[10, 8, 12, 9]` | `9.75` |
 | `both` | Sum + Count (counters only) | `[10, 8, 12, 9]` | `39 (sum), 4 (count)` |
 
-## Additional Resources
-
-- **Architecture Diagram:** See [ARCHITECTURE_DIAGRAM.md](ARCHITECTURE_DIAGRAM.md)
-- **Deployment Patterns:** See [DEPLOYMENT_PATTERNS.md](DEPLOYMENT_PATTERNS.md)
-- **Component Guide:** See [COMPONENT_GUIDE.md](COMPONENT_GUIDE.md)
-- **End-to-End Flow:** See [END_TO_END_FLOW.md](END_TO_END_FLOW.md)
-- **Build and Run:** See [BUILD_AND_RUN.md](BUILD_AND_RUN.md)
-- **Quick Reference:** See [QUICK_REFERENCE.md](QUICK_REFERENCE.md)
-
-## Contributing
-
-For contribution guidelines, see [CONTRIBUTION_GUIDE.md](CONTRIBUTION_GUIDE.md)
 
 ## Status
 

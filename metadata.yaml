@@ -7,7 +7,7 @@ status:
   distributions: [contrib]
   warnings: [Statefulness]
   codeowners:
-    active: []
+    active: [narasimharaojm]
 
 tests:
   config:
